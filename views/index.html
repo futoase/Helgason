@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block title %}Post request viewer{% endblock %}
+
+{% block script %}
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script type="text/javascript">
+  var socketIoJsSource = (
+    "http://" + 
+    window.location.hostname + 
+    ":{{ port }}/socket.io/socket.io.js"
+  );
+
+  // Loaded socket.io.js
+  $.getScript(socketIoJs).done(function (script, status) {
+    // Set client by use of socket.io.
+    var socket = io.connect("http://" + hostname + ":{{ port }}");
+    socket.on("hello-world-message", function(data) {
+      $("#message").append(data.message);
+      $("#message").append($("<br/>"));
+    });
+  });
+
+</script>
+{% endblock %}
+
+{% block main %}
+<p>Message</p>
+<div id="message"></div>
+{% endblock %}

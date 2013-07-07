@@ -1,0 +1,16 @@
+{
+  "name": "Helgason",
+  "version": "1.0.0",
+  "description": "Post request viewer.",
+  "main": "index.js",
+  "dependencies": {
+    "express": "~3.3.3",
+    "socket.io": "~0.9.16"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Keiji Matsuzaki (futoase@gmail.com)",
+  "license": "MIT"
+}
