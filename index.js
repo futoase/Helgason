@@ -33,7 +33,8 @@ swig._read = function (path, options, fn) {
   });
 };
 
-var app = require('express')()
+var express = require('express')
+  , app = express()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server)
   , port = process.env.PORT || 3000;
@@ -43,6 +44,11 @@ app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 app.set('view options', { layout: false });
 app.set('view cache', false);
+
+app.use(express.bodyParser());
+app.use(express.urlencoded());
+app.use(express.json());
+app.use(express.multipart());
 
 swig.init({
   root: __dirname + '/views',
@@ -66,11 +72,6 @@ app.get('/', function(req, res) {
 var response = (new EventEmitter);
 
 app.post('/', function(req, res) {
-  io.sockets.emit('hello-world-message', { message: "Hello world" }); 
-  res.send({ response: "OK" });
-});
-
-response.on('post-message', function(req, res) {
-  io.sockets.emit('hello-world-message', { message: "Hello world" }); 
+  io.sockets.emit('post-message', { message: JSON.stringify(req.body) }); 
   res.send({ response: "OK" });
 });
