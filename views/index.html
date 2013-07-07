@@ -6,19 +6,41 @@
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script type="text/javascript">
   var hostname = window.location.hostname;
-  var socketIoJsSource = (
-    "http://" + 
-    hostname +
-    ":{{ port }}/socket.io/socket.io.js"
-  );
+  var socketIoJs = {
+    addPort : (
+      "http://" + 
+      hostname +
+      ":{{ port }}/socket.io/socket.io.js"
+    ),
+    noPort: (
+      "http://" + 
+      hostname +
+      "/socket.io/socket.io.js"
+    )
+  };
 
-  // Loaded socket.io.js
-  $.getScript(socketIoJsSource).done(function (script, status) {
+  function postMessage(setting) {
     // Set client by use of socket.io.
-    var socket = io.connect("http://" + hostname + ":{{ port }}");
+    if (setting.usePort === true) {
+      var socket = io.connect("http://" + hostname + ":{{ port }}");
+    }
+    else {
+      var socket = io.connect("http://" + hostname);
+    }
     socket.on("post-message", function(data) {
       $("#message").append(data.message);
       $("#message").append($("<br/>"));
+    });
+  }
+
+  // Loaded socket.io.js
+  $.getScript(socketIoJs.addPort).done(function (script, status) {
+    // Set client by use of socket.io.
+    postMessage({ usePort: true});
+  }).fail(function() {
+    $.getScript(socketIoJs.noPort).done(function (script, status) {
+      // Measures of heroku.
+      postMessage({ usePort: false});
     });
   });
 
