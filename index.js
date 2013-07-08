@@ -72,6 +72,14 @@ app.get('/', function(req, res) {
 var response = (new EventEmitter);
 
 app.post('/', function(req, res) {
+  response.emit('post-message', req, res);
+});
+
+app.put('/', function(req, res) {
+  response.emit('post-message', req, res);
+});
+
+response.on('post-message', function(req, res) {
   io.sockets.emit('post-message', { message: JSON.stringify(req.body) }); 
   res.send({ response: "OK" });
 });
