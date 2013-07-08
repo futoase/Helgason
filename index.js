@@ -72,14 +72,29 @@ app.get('/', function(req, res) {
 var response = (new EventEmitter);
 
 app.post('/', function(req, res) {
-  response.emit('post-message', req, res);
+  response.emit('send-message', { method: "post", basic: false }, req, res);
 });
 
 app.put('/', function(req, res) {
-  response.emit('post-message', req, res);
+  response.emit('send-message', { method: "put", basic: false }, req, res);
 });
 
-response.on('post-message', function(req, res) {
-  io.sockets.emit('post-message', { message: JSON.stringify(req.body) }); 
+var basicAuth = express.basicAuth(function(user, path) {
+  return (user == "hoge" && path == "fuga");
+});
+
+app.post('/basic', basicAuth, function(req, res) {
+  response.emit('send-message', { method: "post", basic: true }, req, res);
+});
+
+app.put('/basic', basicAuth, function(req, res) {
+  response.emit('send-message', { method: "put", basic: true }, req, res);
+});
+
+response.on('send-message', function(status, req, res) {
+  io.sockets.emit('send-message', { 
+    status: status, 
+    message: req.body
+  }); 
   res.send({ response: "OK" });
 });

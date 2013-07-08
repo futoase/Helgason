@@ -27,8 +27,14 @@
     else {
       var socket = io.connect("http://" + hostname);
     }
-    socket.on("post-message", function(data) {
-      $("#message").append(data.message);
+    socket.on("send-message", function(data) {
+      $("#message").append(
+        (data.status.basic === true ? "is basic auth" : "no basic auth") +
+        " " +
+        data.status.method + 
+        " " + 
+        JSON.stringify(data.message)
+      );
       $("#message").append($("<br/>"));
     });
   }
@@ -52,6 +58,6 @@
 {% endblock %}
 
 {% block main %}
-<p>Message</p>
+<p><b>Messages</b></p>
 <div id="message"></div>
 {% endblock %}
