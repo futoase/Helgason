@@ -79,8 +79,10 @@ app.put('/', function(req, res) {
   response.emit('send-message', { method: "put", basic: false }, req, res);
 });
 
-var basicAuth = express.basicAuth(function(user, path) {
-  return (user == "hoge" && path == "fuga");
+var basicAuthSetting = require('./basic_auth_setting');
+
+var basicAuth = express.basicAuth(function(user, pass) {
+  return (user == basicAuthSetting.user && pass == basicAuthSetting.pass);
 });
 
 app.post('/basic', basicAuth, function(req, res) {
