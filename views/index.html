@@ -34,13 +34,17 @@
   }
 
   // Loaded socket.io.js
-  $.getScript(socketIoJs.addPort).done(function (script, status) {
-    // Set client by use of socket.io.
-    postMessage({ usePort: true});
+  $.get(socketIoJs.addPort).done(function () {
+    $.getScript(socketIoJs.addPort).done(function () {
+      postMessage({ usePort: true });
+    });
   }).fail(function() {
-    $.getScript(socketIoJs.noPort).done(function (script, status) {
-      // Measures of heroku.
-      postMessage({ usePort: false});
+    $.get(socketIoJs.noPort).done(function() {
+      $.getScript(socketIoJs.noPort).done(function () {
+        postMessage({ usePort: false });
+      });
+    }).fail(function () {
+      alert("socket.io loaded error...");
     });
   });
 
