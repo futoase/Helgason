@@ -9,7 +9,9 @@
     "swig": "~0.14.0",
     "moment": "~2.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "grunt-contrib-concat": "~0.3.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
