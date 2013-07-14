@@ -22,7 +22,7 @@ $.get(socketIoResource).done(function () {
     initSocketIoConnection();
   });
 }).fail(function() {
-  alert("socket.io loaded error...");
+  console.error("socket.io loaded error...");
 });
 
 /**

@@ -6,9 +6,9 @@ module.exports = function (grunt) {
     concat: {
       js: {
         src: [
-          'source/javascript/front_env.js',
-          'source/javascript/init_socket_io.js',
-          'source/javascript/post_message.js',
+          'source/javascript/host_info.js',
+          'source/javascript/socket_io_resource.js',
+          'source/javascript/socket_events.js',
           'source/javascript/init.js'
         ],
         dest: 'public/javascript/app.js'
