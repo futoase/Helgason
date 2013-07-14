@@ -14,31 +14,43 @@ var frontEnvironment = {
       }
     };
 
-var socketIoJs = {
-  addPort : (frontEnvironment.origin() + '/socket.io/socket.io.js'),
-  noPort: (frontEnvironment.origin() + '/socket.io.socket.io.js')
-};
+var socketIoResource = frontEnvironment.origin() + '/socket.io/socket.io.js';
 
 // Loaded socket.io.js
-$.get(socketIoJs.addPort).done(function () {
-  $.getScript(socketIoJs.addPort).done(function () {
-    postMessage({ usePort: true });
+$.get(socketIoResource).done(function () {
+  $.getScript(socketIoResource).done(function () {
+    initSocketIoConnection();
   });
 }).fail(function() {
-  $.get(socketIoJs.noPort).done(function() {
-    $.getScript(socketIoJs.noPort).done(function () {
-      postMessage({ usePort: false });
-    });
-  }).fail(function () {
-    alert("socket.io loaded error...");
-  });
+  alert("socket.io loaded error...");
 });
 
-
-function postMessage(setting) {
+/**
+ * Initial socket.io connection.
+ * 
+ * @return void
+ */
+function initSocketIoConnection() {
   // Set client by use of socket.io.
-  var socket = io.connect(frontEnvironment.origin(setting));
+  bindEvent(socketConnection());
+}
 
+/**
+ * Socket connection.
+ *
+ * @return socket.io object.
+ */
+function socketConnection() {
+  return io.connect(frontEnvironment.origin());
+}
+
+/**
+ * Bind Event to socket.
+ *
+ * @params socket Socket.io object.
+ * @return void
+ */
+function bindEvent(socket) {
   socket.on("send-message", function (data) {
     $("#message").append(
       (data.status.basic === true ? "is basic auth" : "no basic auth") +

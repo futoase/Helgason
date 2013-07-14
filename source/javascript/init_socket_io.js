@@ -1,9 +1,4 @@
-var socketIoJs = {
-  addPort : (frontEnvironment.origin() + '/socket.io/socket.io.js'),
-  noPort: (frontEnvironment.origin() + '/socket.io.socket.io.js')
-};
-
-var socketIoResoure = frontEnvironment.origin() + '/socket.io/socket.io.js';
+var socketIoResource = frontEnvironment.origin() + '/socket.io/socket.io.js';
 
 // Loaded socket.io.js
 $.get(socketIoResource).done(function () {
