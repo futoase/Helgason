@@ -53,6 +53,8 @@ function socketConnection() {
 function bindEvent(socket) {
   socket.on("send-message", function (data) {
     var message = $("<p/>").css({ margin: "2px"});
+    message.append($("<span/>").text("[" + moment().format() + "]"));
+
     if (data.status.basic === true) {
       message.append($("<span/>").text("[Basic Auth: YES]"));
     }
@@ -73,8 +75,9 @@ function bindEvent(socket) {
 
   socket.on("set-basic-auth", function (data) {
     var message = $("<p/>").css({ margin: "1px" });
+    message.append($("<span/>").text("[" + moment().format() + "]"));
     message.append($("<span/>").text("Setting basic authorization."));
-    $("#message").append(message);
+    $("#message").prepend(message);
   });
 }
 
