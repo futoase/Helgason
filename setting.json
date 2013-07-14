@@ -1,0 +1,9 @@
+{
+  "basicAuth": {
+    "user": "username",
+    "pass": "password"
+  },
+  "option": {
+    "availableSeconds": 300
+  }
+}
