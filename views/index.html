@@ -27,7 +27,8 @@
     else {
       var socket = io.connect("http://" + hostname);
     }
-    socket.on("send-message", function(data) {
+
+    socket.on("send-message", function (data) {
       $("#message").append(
         (data.status.basic === true ? "is basic auth" : "no basic auth") +
         " " +
@@ -36,6 +37,10 @@
         JSON.stringify(data.message)
       );
       $("#message").append($("<br/>"));
+    }); 
+
+    socket.on("set-basic-auth", function (data) {
+      $("#message").append("Setting basic authorization.").append($("<br/>"));
     });
   }
 
@@ -54,10 +59,31 @@
     });
   });
 
+  // Initial Setup
+  $(function () {
+    var url = window.location.protocol + "//" + window.location.hostname
+      , port = window.location.port;
+    if (["80", "443"].indexOf(port) !== 0) {
+      url += ':' + port;
+    }
+    $("span.host-name").text(url);
+  });
+
 </script>
 {% endblock %}
 
-{% block main %}
-<p><b>Messages</b></p>
+{% block description %}
+<div>
+  <p>Support HTTP method: PUT, POST</p>
+  <p>Web hooks <b><span class="host-name"></span>/</b></p>
+  <p>Basic Authorization <b><span class="host-name"></span>/basic</b></p>
+  <p>Setup Basic Authorization pass (POST method): <b><span class="host-name"></span>/basic/set</b></p>
+</div>
+{% endblock %}
+
+{% block message %}
+<div>
+  <p style="font-size: large;"><b>Messages</b></p>
+</div>
 <div id="message"></div>
 {% endblock %}
