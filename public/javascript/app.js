@@ -19,6 +19,22 @@ var socketIoJs = {
   noPort: (frontEnvironment.origin() + '/socket.io.socket.io.js')
 };
 
+// Loaded socket.io.js
+$.get(socketIoJs.addPort).done(function () {
+  $.getScript(socketIoJs.addPort).done(function () {
+    postMessage({ usePort: true });
+  });
+}).fail(function() {
+  $.get(socketIoJs.noPort).done(function() {
+    $.getScript(socketIoJs.noPort).done(function () {
+      postMessage({ usePort: false });
+    });
+  }).fail(function () {
+    alert("socket.io loaded error...");
+  });
+});
+
+
 function postMessage(setting) {
   // Set client by use of socket.io.
   var socket = io.connect(frontEnvironment.origin(setting));
@@ -38,21 +54,6 @@ function postMessage(setting) {
     $("#message").append("Setting basic authorization.").append($("<br/>"));
   });
 }
-
-// Loaded socket.io.js
-$.get(socketIoJs.addPort).done(function () {
-  $.getScript(socketIoJs.addPort).done(function () {
-    postMessage({ usePort: true });
-  });
-}).fail(function() {
-  $.get(socketIoJs.noPort).done(function() {
-    $.getScript(socketIoJs.noPort).done(function () {
-      postMessage({ usePort: false });
-    });
-  }).fail(function () {
-    alert("socket.io loaded error...");
-  });
-});
 
 // Initial Setup
 $(function () {
