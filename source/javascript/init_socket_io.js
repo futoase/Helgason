@@ -3,18 +3,13 @@ var socketIoJs = {
   noPort: (frontEnvironment.origin() + '/socket.io.socket.io.js')
 };
 
+var socketIoResoure = frontEnvironment.origin() + '/socket.io/socket.io.js';
+
 // Loaded socket.io.js
-$.get(socketIoJs.addPort).done(function () {
-  $.getScript(socketIoJs.addPort).done(function () {
-    postMessage({ usePort: true });
+$.get(socketIoResource).done(function () {
+  $.getScript(socketIoResource).done(function () {
+    initSocketIoConnection();
   });
 }).fail(function() {
-  $.get(socketIoJs.noPort).done(function() {
-    $.getScript(socketIoJs.noPort).done(function () {
-      postMessage({ usePort: false });
-    });
-  }).fail(function () {
-    alert("socket.io loaded error...");
-  });
+  alert("socket.io loaded error...");
 });
-

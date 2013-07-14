@@ -1,4 +1,4 @@
-function postMessage(setting) {
+function initSocketIoConnection() {
   // Set client by use of socket.io.
   var socket = io.connect(frontEnvironment.origin(setting));
 
