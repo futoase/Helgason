@@ -1,5 +1,5 @@
 // Initial Setup
 $(function () {
-  $("span.host-name").text(frontEnvironment.origin());
+  $("span.host-name").text(hostInfo.origin());
 });
 

@@ -14,7 +14,7 @@ function initSocketIoConnection() {
  * @return socket.io object.
  */
 function socketConnection() {
-  return io.connect(frontEnvironment.origin());
+  return io.connect(hostInfo.origin());
 }
 
 /**
@@ -25,17 +25,28 @@ function socketConnection() {
  */
 function bindEvent(socket) {
   socket.on("send-message", function (data) {
-    $("#message").append(
-      (data.status.basic === true ? "is basic auth" : "no basic auth") +
-      " " +
-      data.status.method + 
-      " " + 
-      JSON.stringify(data.message)
-    );
-    $("#message").append($("<br/>"));
+    var message = $("<p/>").css({ margin: "2px"});
+    if (data.status.basic === true) {
+      message.append($("<span/>").text("[Basic Auth: YES]"));
+    }
+    else {
+      message.append($("<span/>").text("[Basic Auth: NO ]"));
+    }
+
+    message.append($("<span/>").text(
+      "[" + data.status.method.toUpperCase() + "]"
+    ));
+
+    message.append($("<span/>").text(
+      "   " + JSON.stringify(data.message)
+    ));
+
+    $("#message").prepend(message);
   }); 
 
   socket.on("set-basic-auth", function (data) {
-    $("#message").append("Setting basic authorization.").append($("<br/>"));
+    var message = $("<p/>").css({ margin: "1px" });
+    message.append($("<span/>").text("Setting basic authorization."));
+    $("#message").append(message);
   });
 }

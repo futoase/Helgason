@@ -1,4 +1,4 @@
-var socketIoResource = frontEnvironment.origin() + '/socket.io/socket.io.js';
+var socketIoResource = hostInfo.origin() + '/socket.io/socket.io.js';
 
 // Loaded socket.io.js
 $.get(socketIoResource).done(function () {
@@ -6,5 +6,5 @@ $.get(socketIoResource).done(function () {
     initSocketIoConnection();
   });
 }).fail(function() {
-  alert("socket.io loaded error...");
+  console.error("socket.io loaded error...");
 });

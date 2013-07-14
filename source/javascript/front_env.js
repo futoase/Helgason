@@ -1,14 +1,14 @@
-var frontEnvironment = {
+var hostInfo = {
       protocol: window.location.protocol,
       hostname: window.location.hostname,
       port: window.location.port,
       origin: function () {
         var url =  (
-          frontEnvironment.protocol + '//' + 
-          frontEnvironment.hostname
+          hostInfo.protocol + '//' + 
+          hostInfo.hostname
         );
-        if (frontEnvironment.port !== "") {
-          url += ':' + frontEnvironment.port;
+        if (hostInfo.port !== "") {
+          url += ':' + hostInfo.port;
         }
         return url;
       }
