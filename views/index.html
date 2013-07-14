@@ -4,72 +4,7 @@
 
 {% block script %}
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script type="text/javascript">
-  var hostname = window.location.hostname;
-  var socketIoJs = {
-    addPort : (
-      "http://" + 
-      hostname +
-      ":{{ port }}/socket.io/socket.io.js"
-    ),
-    noPort: (
-      "http://" + 
-      hostname +
-      "/socket.io/socket.io.js"
-    )
-  };
-
-  function postMessage(setting) {
-    // Set client by use of socket.io.
-    if (setting.usePort === true) {
-      var socket = io.connect("http://" + hostname + ":{{ port }}");
-    }
-    else {
-      var socket = io.connect("http://" + hostname);
-    }
-
-    socket.on("send-message", function (data) {
-      $("#message").append(
-        (data.status.basic === true ? "is basic auth" : "no basic auth") +
-        " " +
-        data.status.method + 
-        " " + 
-        JSON.stringify(data.message)
-      );
-      $("#message").append($("<br/>"));
-    }); 
-
-    socket.on("set-basic-auth", function (data) {
-      $("#message").append("Setting basic authorization.").append($("<br/>"));
-    });
-  }
-
-  // Loaded socket.io.js
-  $.get(socketIoJs.addPort).done(function () {
-    $.getScript(socketIoJs.addPort).done(function () {
-      postMessage({ usePort: true });
-    });
-  }).fail(function() {
-    $.get(socketIoJs.noPort).done(function() {
-      $.getScript(socketIoJs.noPort).done(function () {
-        postMessage({ usePort: false });
-      });
-    }).fail(function () {
-      alert("socket.io loaded error...");
-    });
-  });
-
-  // Initial Setup
-  $(function () {
-    var url = window.location.protocol + "//" + window.location.hostname
-      , port = window.location.port;
-    if (["80", "443"].indexOf(port) !== 0) {
-      url += ':' + port;
-    }
-    $("span.host-name").text(url);
-  });
-
-</script>
+<script type="text/javascript" src="/javascript/app.js"></script>
 {% endblock %}
 
 {% block description %}
