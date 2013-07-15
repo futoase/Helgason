@@ -11,6 +11,12 @@ var express = require('express')
 
 var response = require('./app/model/response')(io);
 
+var basicAuth = require('./lib/middleware/basic_auth')
+  , basicAuthAdmin = basicAuth.admin
+  , basicAuthUser = basicAuth.user
+  , basicAuthModel = require('./app/model/basic_auth')
+  , basicAuthSetSetting = basicAuthModel.set;
+
 app.engine('html', swig.express3);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
@@ -39,31 +45,9 @@ app.put('/', function(req, res) {
   response.emit('send-message', { method: "put", basic: false }, req, res);
 });
 
-var appSetting = require('./setting')
-  , appOption = appSetting.option
-  , basicAuthSetting = appSetting.basicAuth;
-
-var basicAuthAdmin = express.basicAuth(function(user, pass) {
-  return (user == basicAuthSetting.user && pass == basicAuthSetting.pass);
-});
-
-var basicAuthUserSetting = {};
-var basicAuthUser = express.basicAuth(function(user, pass) {
-  var now = moment().format();
-  return (
-    user == basicAuthUserSetting.user &&  
-    pass == basicAuthUserSetting.pass &&
-    now <= basicAuthUserSetting.date
-  );
-});
-
 app.post('/basic/set', basicAuthAdmin, function(req, res) {
-  var parseQuery = url.parse('?' + req.rawBody).query;
-  basicAuthUserSetting.date = moment().add(
-    'seconds', appOption.availableSeconds
-  ).format();
-  basicAuthUserSetting.user = parseQuery.user;
-  basicAuthUserSetting.pass = parseQuery.pass;
+  var parseQuery = url.parse('?' + req.rawBody, true).query;
+  basicAuthSetSetting(parseQuery);
   response.emit('set-basic-auth', { status: "OK" }, req, res);
 });
 
