@@ -1,5 +1,3 @@
-var EventEmitter = require('events').EventEmitter;
-var swig = require('./lib/swig');
 var url = require('url');
 
 var express = require('express')
@@ -7,7 +5,11 @@ var express = require('express')
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server)
   , port = process.env.PORT || 3000
-  , rawBody = require('./lib/middleware/rawbody');
+  , moment = require('moment')
+  , rawBody = require('./lib/middleware/rawbody')
+  , swig = require('./lib/swig');
+
+var response = require('./app/model/response')(io);
 
 app.engine('html', swig.express3);
 app.set('view engine', 'html');
@@ -26,13 +28,8 @@ io.configure(function() {
 server.listen(port);
 
 app.get('/', function(req, res) {
-  res.render('index', {
-    hostname: 'localhost',
-    port: port
-  });
+  res.render('index');
 });
-
-var response = (new EventEmitter);
 
 app.post('/', function(req, res) {
   response.emit('send-message', { method: "post", basic: false }, req, res);
@@ -55,12 +52,11 @@ var moment = require('moment');
 var basicAuthUserSetting = {};
 var basicAuthUser = express.basicAuth(function(user, pass) {
   var now = moment().format();
-  var passSuccess = (
+  return (
     user == basicAuthUserSetting.user &&  
     pass == basicAuthUserSetting.pass &&
     now <= basicAuthUserSetting.date
   );
-  return passSuccess;
 });
 
 app.post('/basic/set', basicAuthAdmin, function(req, res) {
@@ -79,19 +75,4 @@ app.post('/basic', basicAuthUser, function(req, res) {
 
 app.put('/basic', basicAuthUser, function(req, res) {
   response.emit('send-message', { method: "put", basic: true }, req, res);
-});
-
-response.on('send-message', function(status, req, res) {
-  io.sockets.emit('send-message', { 
-    status: status, 
-    message: req.rawBody
-  });
-  res.send({ response: "OK" });
-});
-
-response.on('set-basic-auth', function(status, req, res) {
-  io.sockets.emit('set-basic-auth', {
-    status: status
-  });
-  res.send({ response: "OK" });
 });
