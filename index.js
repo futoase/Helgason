@@ -5,7 +5,8 @@ var express = require('express')
   , app = express()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server)
-  , port = process.env.PORT || 3000;
+  , port = process.env.PORT || 3000
+  , rawBody = require('./lib/middleware/rawbody');
 
 app.engine('html', swig.express3);
 app.set('view engine', 'html');
@@ -14,10 +15,7 @@ app.set('view options', { layout: false });
 app.set('view cache', false);
 
 app.use(express.static(__dirname + '/public'));
-app.use(express.bodyParser());
-app.use(express.urlencoded());
-app.use(express.json());
-app.use(express.multipart());
+app.use(rawBody);
 
 io.configure(function() {
   io.set("transports", ["xhr-polling"]);
@@ -84,8 +82,8 @@ app.put('/basic', basicAuthUser, function(req, res) {
 response.on('send-message', function(status, req, res) {
   io.sockets.emit('send-message', { 
     status: status, 
-    message: req.body
-  }); 
+    message: req.rawBody
+  });
   res.send({ response: "OK" });
 });
 

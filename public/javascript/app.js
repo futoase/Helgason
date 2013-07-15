@@ -67,7 +67,7 @@ function bindEvent(socket) {
     ));
 
     message.append($("<span/>").text(
-      "   " + JSON.stringify(data.message)
+      "   " + data.message
     ));
 
     $("#message").prepend(message);
