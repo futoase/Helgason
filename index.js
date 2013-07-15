@@ -1,5 +1,6 @@
 var EventEmitter = require('events').EventEmitter;
 var swig = require('./lib/swig');
+var url = require('url');
 
 var express = require('express')
   , app = express()
@@ -63,11 +64,12 @@ var basicAuthUser = express.basicAuth(function(user, pass) {
 });
 
 app.post('/basic/set', basicAuthAdmin, function(req, res) {
+  var parseQuery = url.parse('?' + req.rawBody).query;
   basicAuthUserSetting.date = moment().add(
     'seconds', appOption.availableSeconds
   ).format();
-  basicAuthUserSetting.user = req.body.user;
-  basicAuthUserSetting.pass = req.body.pass;
+  basicAuthUserSetting.user = parseQuery.user;
+  basicAuthUserSetting.pass = parseQuery.pass;
   response.emit('set-basic-auth', { status: "OK" }, req, res);
 });
 
