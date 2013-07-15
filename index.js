@@ -1,43 +1,21 @@
-var EventEmitter = require('events').EventEmitter;
-var swig = require('swig');
-
-swig._cache = {};
-swig.express3 = function (path, options, fn) {
-  swig._read(path, options, function (err, str) {
-    if (err) { 
-      return fn(err); 
-    }
-    try {
-      options.filename = path;
-      var tmpl = swig.compile(str, options);
-      fn(null, tmpl(options));
-    } catch (error) {
-      fn(error);
-    }
-  });
-};
-
-swig._read = function (path, options, fn) {
-  var str = swig._cache[path];
-  if (options.cache && str && typeof str == 'string') {
-    return fn(null, str);
-  }
-  require('fs').readFile(path, 'utf8', function (err, str) {
-    if (err) {
-      return fn(err);
-    }
-    if (options.cache) {
-      swig._cache[path] = str;
-    }
-    fn(null, str);
-  });
-};
+var url = require('url');
 
 var express = require('express')
   , app = express()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server)
-  , port = process.env.PORT || 3000;
+  , port = process.env.PORT || 3000
+  , moment = require('moment')
+  , rawBody = require('./lib/middleware/rawbody')
+  , swig = require('./lib/swig');
+
+var response = require('./app/model/response')(io);
+
+var basicAuth = require('./lib/middleware/basic_auth')
+  , basicAuthAdmin = basicAuth.admin
+  , basicAuthUser = basicAuth.user
+  , basicAuthModel = require('./app/model/basic_auth')
+  , basicAuthSetSetting = basicAuthModel.set;
 
 app.engine('html', swig.express3);
 app.set('view engine', 'html');
@@ -46,15 +24,7 @@ app.set('view options', { layout: false });
 app.set('view cache', false);
 
 app.use(express.static(__dirname + '/public'));
-app.use(express.bodyParser());
-app.use(express.urlencoded());
-app.use(express.json());
-app.use(express.multipart());
-
-swig.init({
-  root: __dirname + '/views',
-  allowErrors: true
-});
+app.use(rawBody);
 
 io.configure(function() {
   io.set("transports", ["xhr-polling"]);
@@ -64,13 +34,8 @@ io.configure(function() {
 server.listen(port);
 
 app.get('/', function(req, res) {
-  res.render('index', {
-    hostname: 'localhost',
-    port: port
-  });
+  res.render('index');
 });
-
-var response = (new EventEmitter);
 
 app.post('/', function(req, res) {
   response.emit('send-message', { method: "post", basic: false }, req, res);
@@ -80,33 +45,9 @@ app.put('/', function(req, res) {
   response.emit('send-message', { method: "put", basic: false }, req, res);
 });
 
-var appSetting = require('./setting')
-  , appOption = appSetting.option
-  , basicAuthSetting = appSetting.basicAuth;
-
-var basicAuthAdmin = express.basicAuth(function(user, pass) {
-  return (user == basicAuthSetting.user && pass == basicAuthSetting.pass);
-});
-
-var moment = require('moment');
-
-var basicAuthUserSetting = {};
-var basicAuthUser = express.basicAuth(function(user, pass) {
-  var now = moment().format();
-  var passSuccess = (
-    user == basicAuthUserSetting.user &&  
-    pass == basicAuthUserSetting.pass &&
-    now <= basicAuthUserSetting.date
-  );
-  return passSuccess;
-});
-
 app.post('/basic/set', basicAuthAdmin, function(req, res) {
-  basicAuthUserSetting.date = moment().add(
-    'seconds', appOption.availableSeconds
-  ).format();
-  basicAuthUserSetting.user = req.body.user;
-  basicAuthUserSetting.pass = req.body.pass;
+  var parseQuery = url.parse('?' + req.rawBody, true).query;
+  basicAuthSetSetting(parseQuery);
   response.emit('set-basic-auth', { status: "OK" }, req, res);
 });
 
@@ -116,19 +57,4 @@ app.post('/basic', basicAuthUser, function(req, res) {
 
 app.put('/basic', basicAuthUser, function(req, res) {
   response.emit('send-message', { method: "put", basic: true }, req, res);
-});
-
-response.on('send-message', function(status, req, res) {
-  io.sockets.emit('send-message', { 
-    status: status, 
-    message: req.body
-  }); 
-  res.send({ response: "OK" });
-});
-
-response.on('set-basic-auth', function(status, req, res) {
-  io.sockets.emit('set-basic-auth', {
-    status: status
-  });
-  res.send({ response: "OK" });
 });
