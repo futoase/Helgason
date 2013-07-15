@@ -47,8 +47,6 @@ var basicAuthAdmin = express.basicAuth(function(user, pass) {
   return (user == basicAuthSetting.user && pass == basicAuthSetting.pass);
 });
 
-var moment = require('moment');
-
 var basicAuthUserSetting = {};
 var basicAuthUser = express.basicAuth(function(user, pass) {
   var now = moment().format();
