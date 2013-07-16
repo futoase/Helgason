@@ -7,3 +7,15 @@ pre.message {
   height: 360px;
   max-height: 360px;
 }
+
+footer {
+  margin: auto;
+  width: 960px;
+}
+
+footer span.copyright {
+  display: block;
+  width: 50%;
+  margin: 0 auto;
+  text-align: center; 
+}
