@@ -7,3 +7,7 @@ POST Request logger.
 # License
 
 BeerLicense.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/futoase/helgason/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
